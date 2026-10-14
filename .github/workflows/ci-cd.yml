@@ -21,7 +21,7 @@ jobs:
           python-version: "3.12"
           cache: pip
       - name: Installer les dépendances
-        run: pip install --only-binary :all: -r requirements.txt pytest-cov
+        run: "pip install --only-binary :all: -r requirements.txt pytest-cov"
       - name: Tests avec couverture
         run: pytest -q --cov=app --cov-report=xml
       - name: Analyse SonarQube
