@@ -1,0 +1,17 @@
+FROM python:3.12-slim AS builder
+WORKDIR /build
+COPY requirements.txt .
+RUN pip install --no-cache-dir --only-binary :all: --prefix=/install -r requirements.txt
+
+FROM python:3.12-slim
+ENV PYTHONUNBUFFERED=1 PYTHONDONTWRITEBYTECODE=1 \
+    COLLECTION_INTERVAL=5 REQUEST_TIMEOUT=5
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends procps \
+    && rm -rf /var/lib/apt/lists/*
+WORKDIR /srv
+COPY --from=builder /install /usr/local
+COPY app ./app
+RUN useradd --system --create-home appuser
+USER appuser
+CMD ["python", "-m", "app.agent"]
